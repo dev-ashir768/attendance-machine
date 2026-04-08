@@ -101,6 +101,126 @@
                   "value": "SOME_SYS_USER_UUID",
                   "description": "Filter by Specific Employee UUID",
                   "disabled": true
+                },
+                {
+                  "key": "deviceId",
+                  "value": "ZK-001",
+                  "description": "Filter by Device ID",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "PRESENT",
+                  "description": "Filter by Attendance Status",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of records per page",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "date",
+                  "description": "Sort by field",
+                  "disabled": true
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc",
+                  "description": "Sort order",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attendance Sessions",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/attendance/sessions?startDate=2026-04-01&endDate=2026-04-30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "attendance", "sessions"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-04-01",
+                  "description": "Start of date range"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-04-30",
+                  "description": "End of date range"
+                },
+                {
+                  "key": "userId",
+                  "value": "SOME_SYS_USER_UUID",
+                  "description": "Filter by Specific Employee UUID",
+                  "disabled": true
+                },
+                {
+                  "key": "deviceId",
+                  "value": "ZK-001",
+                  "description": "Filter by Device ID",
+                  "disabled": true
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Number of records per page",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "checkInTime",
+                  "description": "Sort by field",
+                  "disabled": true
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "desc",
+                  "description": "Sort order",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attendance Summary",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/attendance/summary",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "attendance", "summary"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-04-01",
+                  "description": "Start of date range",
+                  "disabled": true
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-04-30",
+                  "description": "End of date range",
+                  "disabled": true
                 }
               ]
             }

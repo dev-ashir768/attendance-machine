@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { checkIn, checkOut, getAttendanceHistory, getAttendanceSessions } from '../../modules/attendance/attendance.controller';
+import { checkIn, checkOut, getAttendanceHistory, getAttendanceSessions, getAttendanceSummary } from '../../modules/attendance/attendance.controller';
 import { authenticateDevice } from '../../middlewares/deviceAuth.middleware';
 import { authenticateJWT } from '../../middlewares/auth.middleware';
 import { validate } from '../../middlewares/validateInput.middleware';
@@ -14,5 +14,6 @@ router.post('/check-out', authenticateDevice, validate(webhookPayloadSchema), ch
 // Admin Dashboard Queries (Secured via JWT)
 router.get('/history', authenticateJWT, validate(reportQuerySchema), getAttendanceHistory);
 router.get('/sessions', authenticateJWT, validate(reportQuerySchema), getAttendanceSessions);
+router.get('/summary', authenticateJWT, getAttendanceSummary);
 
 export default router;

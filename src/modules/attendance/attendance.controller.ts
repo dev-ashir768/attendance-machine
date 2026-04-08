@@ -134,3 +134,45 @@ export const getAttendanceSessions = async (req: Request, res: Response) => {
     res.status(400).json({ success: false, error: error.message });
   }
 };
+
+export const getAttendanceSummary = async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate } = req.query as any;
+
+    const dateFilter: any = {};
+    if (startDate || endDate) {
+      dateFilter.date = {};
+      if (startDate) dateFilter.date.gte = new Date(String(startDate));
+      if (endDate) dateFilter.date.lte = new Date(String(endDate));
+    }
+
+    const totalUsers = await prisma.user.count({ where: { isActive: true } });
+    const totalSessions = await prisma.attendanceSession.count({
+      where: dateFilter.date ? { checkInTime: dateFilter.date } : {},
+    });
+    const totalDailyRecords = await prisma.attendanceDaily.count({ where: dateFilter });
+
+    const statusCounts = await prisma.attendanceDaily.groupBy({
+      by: ['status'],
+      where: dateFilter,
+      _count: { status: true },
+    });
+
+    const statusSummary = statusCounts.reduce((acc, item) => {
+      acc[item.status] = item._count.status;
+      return acc;
+    }, {} as Record<string, number>);
+
+    res.json({
+      success: true,
+      data: {
+        totalUsers,
+        totalSessions,
+        totalDailyRecords,
+        statusSummary,
+      },
+    });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};

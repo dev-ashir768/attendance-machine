@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAttendanceSessions = exports.getAttendanceHistory = exports.checkOut = exports.checkIn = void 0;
+exports.getAttendanceSummary = exports.getAttendanceSessions = exports.getAttendanceHistory = exports.checkOut = exports.checkIn = void 0;
 const attendance_service_1 = require("./attendance.service");
 const prisma_1 = require("../../utils/prisma");
 const attendanceService = new attendance_service_1.AttendanceService();
@@ -134,3 +134,43 @@ const getAttendanceSessions = async (req, res) => {
     }
 };
 exports.getAttendanceSessions = getAttendanceSessions;
+const getAttendanceSummary = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        const dateFilter = {};
+        if (startDate || endDate) {
+            dateFilter.date = {};
+            if (startDate)
+                dateFilter.date.gte = new Date(String(startDate));
+            if (endDate)
+                dateFilter.date.lte = new Date(String(endDate));
+        }
+        const totalUsers = await prisma_1.prisma.user.count({ where: { isActive: true } });
+        const totalSessions = await prisma_1.prisma.attendanceSession.count({
+            where: dateFilter.date ? { checkInTime: dateFilter.date } : {},
+        });
+        const totalDailyRecords = await prisma_1.prisma.attendanceDaily.count({ where: dateFilter });
+        const statusCounts = await prisma_1.prisma.attendanceDaily.groupBy({
+            by: ['status'],
+            where: dateFilter,
+            _count: { status: true },
+        });
+        const statusSummary = statusCounts.reduce((acc, item) => {
+            acc[item.status] = item._count.status;
+            return acc;
+        }, {});
+        res.json({
+            success: true,
+            data: {
+                totalUsers,
+                totalSessions,
+                totalDailyRecords,
+                statusSummary,
+            },
+        });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
+exports.getAttendanceSummary = getAttendanceSummary;
