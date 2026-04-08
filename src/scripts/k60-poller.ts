@@ -88,6 +88,10 @@ async function processLog(log: any) {
   console.log(`[DEBUG] Checkin Statuses: ${K60_CHECKIN_STATUSES.join(',')}`);
   console.log(`[DEBUG] Is Checkout? ${isCheckOut(normalized.status)}`);
   console.log(`[DEBUG] Is Checkin? ${isCheckIn(normalized.status)}`);
+  if (normalized.status === undefined || normalized.status === null) {
+    console.log('[DEBUG] Raw log fields:', Object.keys(normalized.rawPayload));
+    console.log('[DEBUG] Raw log payload:', JSON.stringify(normalized.rawPayload));
+  }
 
   if (isCheckOut(normalized.status)) {
     try {
