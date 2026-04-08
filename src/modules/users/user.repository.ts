@@ -16,6 +16,19 @@ export class UserRepository {
     });
   }
 
+  async findById(id: string) {
+    return await prisma.user.findUnique({
+      where: { id }
+    });
+  }
+
+  async update(id: string, data: Prisma.UserUpdateInput) {
+    return await prisma.user.update({
+      where: { id },
+      data
+    });
+  }
+
   async assignDevice(userId: string, systemDeviceId: string) {
     return await prisma.deviceUser.create({
       data: {

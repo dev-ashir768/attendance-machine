@@ -9,7 +9,7 @@ const K60_PORT = Number(process.env.K60_PORT ?? 4370);
 const K60_DEVICE_ID = process.env.K60_DEVICE_ID ?? process.env.K60_IP ?? 'K60_DEVICE';
 const K60_DEVICE_NAME = process.env.K60_DEVICE_NAME ?? 'K60 K60';
 const K60_POLL_INTERVAL_MS = Number(process.env.K60_POLL_INTERVAL_MS ?? 60_000);
-const K60_CHECKOUT_STATUSES = (process.env.K60_CHECKOUT_STATUSES ?? '1').split(',').map((value) => value.trim());
+const K60_CHECKOUT_STATUSES = (process.env.K60_CHECKOUT_STATUSES ?? '1,5,6').split(',').map((value) => value.trim());
 const K60_CHECKIN_STATUSES = (process.env.K60_CHECKIN_STATUSES ?? '0,4,8').split(',').map((value) => value.trim());
 
 const attendanceService = new AttendanceService();
@@ -35,6 +35,14 @@ function isCheckOut(status: unknown) {
   return K60_CHECKOUT_STATUSES.includes(value);
 }
 
+function isCheckIn(status: unknown) {
+  if (status === undefined || status === null) {
+    return false;
+  }
+  const value = String(status).trim();
+  return K60_CHECKIN_STATUSES.includes(value);
+}
+
 function normalizeAttendanceLog(log: any) {
   const deviceUserId = String(
     log.deviceUserId ?? log.userSn ?? log.userid ?? log.userId ?? log.enrollNumber ?? log.id ?? ''
@@ -42,7 +50,7 @@ function normalizeAttendanceLog(log: any) {
   const timestamp = String(
     log.recordTime ?? log.timestamp ?? log.time ?? log.date ?? ''
   ).trim();
-  const status = log.status ?? log.checkType ?? log.state ?? log.punchType;
+  const status = log.status ?? log.checkType ?? log.state ?? log.punchType ?? log.type;
   return { deviceUserId, timestamp, status, rawPayload: log };
 }
 
@@ -74,14 +82,59 @@ async function processLog(log: any) {
     return;
   }
 
+  // Debug logging
+  console.log(`[DEBUG] User: ${normalized.deviceUserId}, Status: ${normalized.status}, Timestamp: ${parsedTimestamp.toISOString()}`);
+  console.log(`[DEBUG] Checkout Statuses: ${K60_CHECKOUT_STATUSES.join(',')}`);
+  console.log(`[DEBUG] Checkin Statuses: ${K60_CHECKIN_STATUSES.join(',')}`);
+  console.log(`[DEBUG] Is Checkout? ${isCheckOut(normalized.status)}`);
+  console.log(`[DEBUG] Is Checkin? ${isCheckIn(normalized.status)}`);
+
   if (isCheckOut(normalized.status)) {
-    await attendanceService.processCheckOut(normalized.deviceUserId, K60_DEVICE_ID, parsedTimestamp.toISOString(), normalized.rawPayload);
-    console.log(`Processed CHECK-OUT for user ${normalized.deviceUserId} at ${parsedTimestamp.toISOString()}`);
+    try {
+      await attendanceService.processCheckOut(normalized.deviceUserId, K60_DEVICE_ID, parsedTimestamp.toISOString(), normalized.rawPayload);
+      console.log(`✅ Processed CHECK-OUT for user ${normalized.deviceUserId} at ${parsedTimestamp.toISOString()}`);
+    } catch (error: any) {
+      console.error(`❌ CHECK-OUT ERROR for user ${normalized.deviceUserId}: ${error.message}`);
+    }
     return;
   }
 
-  await attendanceService.processCheckIn(normalized.deviceUserId, K60_DEVICE_ID, parsedTimestamp.toISOString(), normalized.rawPayload);
-  console.log(`Processed CHECK-IN for user ${normalized.deviceUserId} at ${parsedTimestamp.toISOString()}`);
+  if (!isCheckIn(normalized.status)) {
+    // Fallback: if status is unknown but there is an open session, treat it as checkout.
+    const user = await prisma.user.findUnique({ where: { deviceUserId: normalized.deviceUserId } });
+    if (user) {
+      const today = new Date(parsedTimestamp);
+      const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}T00:00:00.000Z`;
+      const daily = await prisma.attendanceDaily.findUnique({
+        where: {
+          userId_date: { userId: user.id, date: new Date(dateStr) }
+        }
+      });
+      if (daily) {
+        const latestSession = await prisma.attendanceSession.findFirst({
+          where: { dailyId: daily.id },
+          orderBy: { checkInTime: 'desc' }
+        });
+        if (latestSession && !latestSession.checkOutTime && parsedTimestamp.getTime() > latestSession.checkInTime.getTime() + 60000) {
+          console.log(`[DEBUG] Fallback using open session checkout for user ${normalized.deviceUserId}`);
+          try {
+            await attendanceService.processCheckOut(normalized.deviceUserId, K60_DEVICE_ID, parsedTimestamp.toISOString(), normalized.rawPayload);
+            console.log(`✅ Processed fallback CHECK-OUT for user ${normalized.deviceUserId} at ${parsedTimestamp.toISOString()}`);
+            return;
+          } catch (error: any) {
+            console.error(`❌ Fallback CHECK-OUT ERROR for user ${normalized.deviceUserId}: ${error.message}`);
+          }
+        }
+      }
+    }
+  }
+
+  try {
+    await attendanceService.processCheckIn(normalized.deviceUserId, K60_DEVICE_ID, parsedTimestamp.toISOString(), normalized.rawPayload);
+    console.log(`✅ Processed CHECK-IN for user ${normalized.deviceUserId} at ${parsedTimestamp.toISOString()}`);
+  } catch (error: any) {
+    console.error(`❌ CHECK-IN ERROR for user ${normalized.deviceUserId}: ${error.message}`);
+  }
 }
 
 async function pollOnce() {

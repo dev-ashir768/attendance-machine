@@ -176,3 +176,75 @@ export const getAttendanceSummary = async (req: Request, res: Response) => {
     res.status(400).json({ success: false, error: error.message });
   }
 };
+
+export const getUserCheckInOut = async (req: Request, res: Response) => {
+  try {
+    const { userId, startDate, endDate } = req.query as any;
+
+    if (!userId) {
+      return res.status(400).json({ success: false, error: 'userId is required' });
+    }
+
+    // Get user details
+    const user = await prisma.user.findUnique({
+      where: { id: String(userId) }
+    });
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    const where: any = { userId: String(userId) };
+    
+    if (startDate || endDate) {
+      where.checkInTime = {};
+      if (startDate) where.checkInTime.gte = new Date(String(startDate));
+      if (endDate) where.checkInTime.lte = new Date(String(endDate));
+    }
+
+    const sessions = await prisma.attendanceSession.findMany({
+      where,
+      include: {
+        daily: {
+          select: { date: true, status: true }
+        }
+      },
+      orderBy: { checkInTime: 'asc' },
+    });
+
+    const summary = {
+      totalSessions: sessions.length,
+      totalCheckIns: sessions.filter(s => s.checkInTime).length,
+      totalCheckOuts: sessions.filter(s => s.checkOutTime).length,
+      totalHours: sessions.reduce((acc, s) => acc + (s.duration || 0), 0),
+      averageHours: sessions.length > 0 ? Math.round(sessions.reduce((acc, s) => acc + (s.duration || 0), 0) / sessions.length) : 0,
+    };
+
+    res.json({
+      success: true,
+      data: {
+        user: {
+          id: user.id,
+          name: user.name,
+          deviceUserId: user.deviceUserId,
+          email: user.email,
+        },
+        period: {
+          startDate: startDate || 'N/A',
+          endDate: endDate || 'N/A',
+        },
+        attendance: sessions.map(session => ({
+          id: session.id,
+          date: session.daily.date,
+          checkInTime: session.checkInTime,
+          checkOutTime: session.checkOutTime,
+          duration: session.duration,
+          status: session.daily.status,
+        })),
+        summary,
+      },
+    });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};

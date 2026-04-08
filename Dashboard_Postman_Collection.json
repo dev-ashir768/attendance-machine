@@ -196,6 +196,27 @@
           }
         },
         {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/{{userId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "{{userId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"john123\",\n  \"name\": \"John Doe Updated\",\n  \"email\": \"john.updated@example.com\",\n  \"password\": \"securePassword123\"\n}"
+            }
+          }
+        },
+        {
           "name": "Assign User to Device",
           "request": {
             "method": "POST",
@@ -273,6 +294,31 @@
           }
         },
         {
+          "name": "Get User Check-in/Check-out",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/attendance/user-checkinout?userId={{userId}}&startDate=2026-04-01&endDate=2026-04-30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "attendance", "user-checkinout"],
+              "query": [
+                {
+                  "key": "userId",
+                  "value": "{{userId}}"
+                },
+                {
+                  "key": "startDate",
+                  "value": "2026-04-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-04-30"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "Get Attendance Summary",
           "request": {
             "method": "GET",
@@ -346,6 +392,39 @@
                 {
                   "key": "limit",
                   "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Cron Status",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/attendance/cron-status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "attendance", "cron-status"]
+            }
+          }
+        },
+        {
+          "name": "Get Attendance Logs",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/attendance/logs?source=all&limit=50",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "attendance", "logs"],
+              "query": [
+                {
+                  "key": "source",
+                  "value": "all",
+                  "description": "Filter by source: all, cron, device"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
                 }
               ]
             }

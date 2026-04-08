@@ -80,6 +80,32 @@ export const getUsers = async (req: Request, res: Response) => {
   }
 };
 
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const updateData = req.body;
+
+    // Check if user exists
+    const user = await userRepo.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'User not found' });
+    }
+
+    // Hash password if provided
+    if (updateData.password) {
+      const saltRounds = 10;
+      updateData.password = await bcrypt.hash(updateData.password, saltRounds);
+    }
+
+    const updatedUser = await userRepo.update(userId, updateData);
+    // Remove password from response
+    const { password, ...userWithoutPassword } = updatedUser;
+    res.json({ success: true, data: userWithoutPassword });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
+
 export const assignDevice = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
