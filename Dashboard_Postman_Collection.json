@@ -1,0 +1,140 @@
+{
+  "info": {
+    "name": "Attendance Management Admin Dashboard",
+    "description": "Frontend integration APIs for the Attendance Admin Dashboard. These are protected via JWT tokens.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Users",
+      "description": "Manage employee identities mapping them to ZKTeco offline IDs",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users"]
+            }
+          }
+        },
+        {
+          "name": "Create Mapped User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceUserId\": \"1\", // MUST match ID assigned on ZKTeco machine screen\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": \"EMPLOYEE\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Assign User to Device",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/{{userId}}/devices",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "{{userId}}", "devices"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"SYSTEM_DEVICE_ID_HERE\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attendance Reports",
+      "item": [
+        {
+          "name": "Get Filtered Attendance History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/attendance/history?startDate=2026-04-01&endDate=2026-04-30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "attendance", "history"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-04-01",
+                  "description": "Start of date range"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-04-30",
+                  "description": "End of date range"
+                },
+                {
+                  "key": "userId",
+                  "value": "SOME_SYS_USER_UUID",
+                  "description": "Filter by Specific Employee UUID",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "PASTE_YOUR_ADMIN_JWT_HERE",
+      "type": "string"
+    }
+  ]
+}

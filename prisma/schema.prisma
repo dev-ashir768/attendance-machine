@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String       @id @default(uuid())
+  deviceUserId String       @unique // ID from ZKTeco machine
+  name         String
+  email        String?      @unique
+  role         Role         @default(EMPLOYEE)
+  isActive     Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  dailyAttendances AttendanceDaily[]
+  sessions         AttendanceSession[]
+  devices          DeviceUser[]
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+model Device {
+  id          String       @id @default(uuid()) // System device ID
+  deviceId    String       @unique // Physical Device ID (e.g., ZK-001)
+  name        String
+  ipAddress   String?
+  location    String?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+
+  users       DeviceUser[]
+  logs        AttendanceLog[]
+}
+
+model DeviceUser {
+  id        String   @id @default(uuid())
+  userId    String
+  deviceId  String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  device    Device   @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, deviceId])
+}
+
+model AttendanceDaily {
+  id        String    @id @default(uuid())
+  userId    String
+  date      DateTime  @db.Date
+  status    AttendanceStatus @default(PRESENT)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions  AttendanceSession[]
+
+  @@unique([userId, date])
+}
+
+model AttendanceSession {
+  id           String    @id @default(uuid())
+  userId       String
+  dailyId      String
+  checkInTime  DateTime
+  checkOutTime DateTime?
+  duration     Int?      // Output derived calculation (minutes)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  daily        AttendanceDaily @relation(fields: [dailyId], references: [id], onDelete: Cascade)
+}
+
+model AttendanceLog {
+  id           String    @id @default(uuid())
+  deviceUserId String
+  deviceId     String
+  timestamp    DateTime
+  type         LogType   // We will infer check in / check out from timestamp spacing or strictly based on machine parameters
+  processed    Boolean   @default(false)
+  rawPayload   Json
+  createdAt    DateTime  @default(now())
+
+  device       Device    @relation(fields: [deviceId], references: [deviceId], onDelete: Cascade)
+}
+
+enum LogType {
+  CHECK_IN
+  CHECK_OUT
+  UNKNOWN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  HALF_DAY
+}
