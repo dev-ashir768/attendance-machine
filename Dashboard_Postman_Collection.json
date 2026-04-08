@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "Attendance Management Admin Dashboard",
-    "description": "Frontend integration APIs for the Attendance Admin Dashboard. These are protected via JWT tokens.",
+    "name": "ZKTeco Attendance Management System",
+    "description": "Complete API collection for ZKTeco Attendance Management System with secure user authentication, user management, and attendance reporting. Default admin credentials: username: 'admin', password: 'admin123'",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -16,8 +16,50 @@
   },
   "item": [
     {
-      "name": "Users",
-      "description": "Manage employee identities mapping them to ZKTeco offline IDs",
+      "name": "Authentication",
+      "description": "Login and authentication endpoints",
+      "item": [
+        {
+          "name": "Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('jwt_token', response.token);",
+                  "    console.log('JWT Token saved:', response.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User Management",
+      "description": "Manage employee identities and device assignments",
       "item": [
         {
           "name": "Get All Users",
@@ -31,7 +73,7 @@
           }
         },
         {
-          "name": "Create Mapped User",
+          "name": "Create New User",
           "request": {
             "method": "POST",
             "header": [
@@ -47,7 +89,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"deviceUserId\": \"1\", // MUST match ID assigned on ZKTeco machine screen\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": \"EMPLOYEE\"\n}"
+              "raw": "{\n  \"deviceUserId\": \"1\",\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": \"EMPLOYEE\"\n}"
             }
           }
         },
@@ -68,21 +110,97 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"deviceId\": \"SYSTEM_DEVICE_ID_HERE\"\n}"
+              "raw": "{\n  \"deviceId\": \"ZK-001\"\n}"
             }
           }
         }
       ]
     },
     {
-      "name": "Attendance Reports",
+      "name": "Attendance Management",
+      "description": "Attendance data collection and reporting",
       "item": [
         {
-          "name": "Get Filtered Attendance History",
+          "name": "Check In (Device Webhook)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "description": "Request body should be JSON"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}",
+                "description": "API Key for device authentication"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/attendance/check-in",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "attendance", "check-in"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceUserId\": \"1\",\n  \"timestamp\": \"2026-04-08T09:00:00.000Z\",\n  \"deviceId\": \"ZK-001\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Check Out (Device Webhook)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-api-key",
+                "value": "{{api_key}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/attendance/check-out",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "attendance", "check-out"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceUserId\": \"1\",\n  \"timestamp\": \"2026-04-08T17:00:00.000Z\",\n  \"deviceId\": \"ZK-001\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Attendance Summary",
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/api/v1/attendance/history?startDate=2026-04-01&endDate=2026-04-30",
+              "raw": "{{base_url}}/api/v1/attendance/summary?startDate=2026-04-01&endDate=2026-04-30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "attendance", "summary"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-04-01",
+                  "description": "Start date for summary (optional)"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-04-30",
+                  "description": "End date for summary (optional)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attendance History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/attendance/history?page=1&limit=10&startDate=2026-04-01&endDate=2026-04-30",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "attendance", "history"],
               "query": [
@@ -98,45 +216,41 @@
                 },
                 {
                   "key": "userId",
-                  "value": "SOME_SYS_USER_UUID",
-                  "description": "Filter by Specific Employee UUID",
+                  "value": "",
+                  "description": "Filter by specific user ID",
                   "disabled": true
                 },
                 {
                   "key": "deviceId",
-                  "value": "ZK-001",
-                  "description": "Filter by Device ID",
+                  "value": "",
+                  "description": "Filter by device ID",
                   "disabled": true
                 },
                 {
                   "key": "status",
                   "value": "PRESENT",
-                  "description": "Filter by Attendance Status",
+                  "description": "Filter by attendance status",
                   "disabled": true
                 },
                 {
                   "key": "page",
                   "value": "1",
-                  "description": "Page number for pagination",
-                  "disabled": true
+                  "description": "Page number for pagination"
                 },
                 {
                   "key": "limit",
                   "value": "10",
-                  "description": "Number of records per page",
-                  "disabled": true
+                  "description": "Records per page (max 100)"
                 },
                 {
                   "key": "sortBy",
                   "value": "date",
-                  "description": "Sort by field",
-                  "disabled": true
+                  "description": "Sort field: date, createdAt"
                 },
                 {
                   "key": "sortOrder",
                   "value": "desc",
-                  "description": "Sort order",
-                  "disabled": true
+                  "description": "Sort order: asc, desc"
                 }
               ]
             }
@@ -147,7 +261,7 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/api/v1/attendance/sessions?startDate=2026-04-01&endDate=2026-04-30",
+              "raw": "{{base_url}}/api/v1/attendance/sessions?page=1&limit=10&startDate=2026-04-01&endDate=2026-04-30",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "attendance", "sessions"],
               "query": [
@@ -163,64 +277,35 @@
                 },
                 {
                   "key": "userId",
-                  "value": "SOME_SYS_USER_UUID",
-                  "description": "Filter by Specific Employee UUID",
+                  "value": "",
+                  "description": "Filter by specific user ID",
                   "disabled": true
                 },
                 {
                   "key": "deviceId",
-                  "value": "ZK-001",
-                  "description": "Filter by Device ID",
+                  "value": "",
+                  "description": "Filter by device ID",
                   "disabled": true
                 },
                 {
                   "key": "page",
                   "value": "1",
-                  "description": "Page number for pagination",
-                  "disabled": true
+                  "description": "Page number for pagination"
                 },
                 {
                   "key": "limit",
                   "value": "10",
-                  "description": "Number of records per page",
-                  "disabled": true
+                  "description": "Records per page (max 100)"
                 },
                 {
                   "key": "sortBy",
                   "value": "checkInTime",
-                  "description": "Sort by field",
-                  "disabled": true
+                  "description": "Sort field: checkInTime, createdAt"
                 },
                 {
                   "key": "sortOrder",
                   "value": "desc",
-                  "description": "Sort order",
-                  "disabled": true
-                }
-              ]
-            }
-          }
-        },
-        {
-          "name": "Get Attendance Summary",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/api/v1/attendance/summary",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "attendance", "summary"],
-              "query": [
-                {
-                  "key": "startDate",
-                  "value": "2026-04-01",
-                  "description": "Start of date range",
-                  "disabled": true
-                },
-                {
-                  "key": "endDate",
-                  "value": "2026-04-30",
-                  "description": "End of date range",
-                  "disabled": true
+                  "description": "Sort order: asc, desc"
                 }
               ]
             }
@@ -253,7 +338,17 @@
     },
     {
       "key": "jwt_token",
-      "value": "PASTE_YOUR_ADMIN_JWT_HERE",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "api_key",
+      "value": "SQHyhE3gdBM0FKSXl6KYEhr169UGuIVysN66DmoGl34",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
       "type": "string"
     }
   ]

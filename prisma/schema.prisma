@@ -10,6 +10,8 @@ datasource db {
 model User {
   id           String       @id @default(uuid())
   deviceUserId String       @unique // ID from ZKTeco machine
+  username     String?      @unique // For login authentication
+  password     String?      // Hashed password
   name         String
   email        String?      @unique
   role         Role         @default(EMPLOYEE)

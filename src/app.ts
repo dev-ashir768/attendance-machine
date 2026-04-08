@@ -16,12 +16,6 @@ app.use('/iclock', express.text({ type: '*/*' }), iclockRoutes);
 // Main App Rate limiting (e.g. 100 requests per minute)
 app.use(rateLimiter({ windowMs: 60 * 1000, max: 100 }));
 
-// Public login endpoint
-app.post('/api/auth/login', (req, res) => {
-  const token = jwt.sign({ role: 'admin' }, env.JWT_SECRET, { expiresIn: '24h' });
-  res.json({ success: true, token });
-});
-
 app.use('/api/v1', v1Routes);
 
 app.use(errorHandler);

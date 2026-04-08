@@ -9,6 +9,11 @@ class UserRepository {
     async findMany() {
         return await prisma_1.prisma.user.findMany();
     }
+    async findByUsername(username) {
+        return await prisma_1.prisma.user.findUnique({
+            where: { username }
+        });
+    }
     async assignDevice(userId, systemDeviceId) {
         return await prisma_1.prisma.deviceUser.create({
             data: {

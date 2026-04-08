@@ -10,6 +10,12 @@ export class UserRepository {
     return await prisma.user.findMany();
   }
 
+  async findByUsername(username: string) {
+    return await prisma.user.findUnique({
+      where: { username }
+    });
+  }
+
   async assignDevice(userId: string, systemDeviceId: string) {
     return await prisma.deviceUser.create({
       data: {

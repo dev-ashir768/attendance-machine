@@ -14,6 +14,6 @@ router.post('/check-out', authenticateDevice, validate(webhookPayloadSchema), ch
 // Admin Dashboard Queries (Secured via JWT)
 router.get('/history', authenticateJWT, validate(reportQuerySchema), getAttendanceHistory);
 router.get('/sessions', authenticateJWT, validate(reportQuerySchema), getAttendanceSessions);
-router.get('/summary', authenticateJWT, getAttendanceSummary);
+router.get('/summary', authenticateJWT, validate(reportQuerySchema), getAttendanceSummary);
 
 export default router;

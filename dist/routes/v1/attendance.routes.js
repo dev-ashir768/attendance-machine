@@ -13,5 +13,5 @@ router.post('/check-out', deviceAuth_middleware_1.authenticateDevice, (0, valida
 // Admin Dashboard Queries (Secured via JWT)
 router.get('/history', auth_middleware_1.authenticateJWT, (0, validateInput_middleware_1.validate)(attendance_schema_1.reportQuerySchema), attendance_controller_1.getAttendanceHistory);
 router.get('/sessions', auth_middleware_1.authenticateJWT, (0, validateInput_middleware_1.validate)(attendance_schema_1.reportQuerySchema), attendance_controller_1.getAttendanceSessions);
-router.get('/summary', auth_middleware_1.authenticateJWT, attendance_controller_1.getAttendanceSummary);
+router.get('/summary', auth_middleware_1.authenticateJWT, (0, validateInput_middleware_1.validate)(attendance_schema_1.reportQuerySchema), attendance_controller_1.getAttendanceSummary);
 exports.default = router;

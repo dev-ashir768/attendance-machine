@@ -8,11 +8,14 @@
     "build": "tsc",
     "start": "node dist/app.js",
     "poll:k60": "ts-node src/scripts/k60-poller.ts",
+    "seed:admin": "ts-node src/scripts/seed-admin.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
   },
   "dependencies": {
     "@prisma/client": "^5.0.0",
+    "@types/bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",

@@ -1,12 +1,15 @@
 import { Router } from 'express';
-import { createUser, getUsers, assignDevice } from '../../modules/users/user.controller';
+import { createUser, login, getUsers, assignDevice } from '../../modules/users/user.controller';
 import { authenticateJWT } from '../../middlewares/auth.middleware';
 import { validate } from '../../middlewares/validateInput.middleware';
-import { createUserSchema, assignDeviceSchema } from '../../modules/users/user.schema';
+import { createUserSchema, loginSchema, assignDeviceSchema } from '../../modules/users/user.schema';
 
 const router = Router();
 
-router.use(authenticateJWT); // Secure all user routes
+// Public login endpoint (no auth required)
+router.post('/login', validate(loginSchema), login);
+
+router.use(authenticateJWT); // Secure all other user routes
 
 router.get('/', getUsers);
 router.post('/', validate(createUserSchema), createUser);
