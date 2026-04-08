@@ -84,9 +84,10 @@ async function pollOnce() {
   const zkInstance = new ZKLib(K60_IP, K60_PORT, 10000, 4000);
   try {
     await zkInstance.createSocket();
-    const logs = await zkInstance.getAttendances();
+    const logsRaw = await zkInstance.getAttendances();
+    const logs = Array.isArray(logsRaw) ? logsRaw : logsRaw?.data ?? [];
     if (!Array.isArray(logs)) {
-      console.warn('Received unexpected attendances response from K60:', logs);
+      console.warn('Received unexpected attendances response from K60:', logsRaw);
       return;
     }
 
