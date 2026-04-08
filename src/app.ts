@@ -5,6 +5,7 @@ import { errorHandler } from './middlewares/errorHandler.middleware';
 import { rateLimiter } from './middlewares/rateLimit.middleware';
 import v1Routes from './routes/v1';
 import iclockRoutes from './routes/iclock.routes';
+import { cronService } from './services/cron.service';
 
 const app = express();
 
@@ -23,4 +24,7 @@ app.use(errorHandler);
 const PORT = env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  
+  // Start cron jobs
+  cronService.start();
 });

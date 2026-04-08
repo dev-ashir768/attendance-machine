@@ -12,5 +12,9 @@ const envSchema = zod_1.z.object({
     DATABASE_URL: zod_1.z.string(),
     JWT_SECRET: zod_1.z.string(),
     API_KEY: zod_1.z.string(),
+    ENABLE_CRON: zod_1.z.string().default('true'),
+    CHECK_IN_TIME: zod_1.z.string().default('09:00'), // Format: HH:mm (24-hour)
+    CHECK_OUT_TIME: zod_1.z.string().default('17:00'), // Format: HH:mm (24-hour)
+    CRON_TIMEZONE: zod_1.z.string().default('Asia/Karachi'), // Pakistan timezone
 });
 exports.env = envSchema.parse(process.env);
