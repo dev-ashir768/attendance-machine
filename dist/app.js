@@ -1,0 +1,29 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const env_1 = require("./config/env");
+const errorHandler_middleware_1 = require("./middlewares/errorHandler.middleware");
+const rateLimit_middleware_1 = require("./middlewares/rateLimit.middleware");
+const v1_1 = __importDefault(require("./routes/v1"));
+const iclock_routes_1 = __importDefault(require("./routes/iclock.routes"));
+const app = (0, express_1.default)();
+app.use(express_1.default.json());
+// ADMS Protocol relies on raw text payloads rather than JSON
+app.use('/iclock', express_1.default.text({ type: '*/*' }), iclock_routes_1.default);
+// Main App Rate limiting (e.g. 100 requests per minute)
+app.use((0, rateLimit_middleware_1.rateLimiter)({ windowMs: 60 * 1000, max: 100 }));
+// Public login endpoint
+app.post('/api/auth/login', (req, res) => {
+    const token = jsonwebtoken_1.default.sign({ role: 'admin' }, env_1.env.JWT_SECRET, { expiresIn: '24h' });
+    res.json({ success: true, token });
+});
+app.use('/api/v1', v1_1.default);
+app.use(errorHandler_middleware_1.errorHandler);
+const PORT = env_1.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
