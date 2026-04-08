@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "ZKTeco Attendance Management System",
-    "description": "Complete API collection for ZKTeco Attendance Management System with secure user authentication, user management, and attendance reporting. Default admin credentials: username: 'admin', password: 'admin123'",
+    "description": "Complete API collection for ZKTeco Attendance Management System with secure user authentication, device management, user management, and attendance reporting. Default admin credentials: username: 'admin', password: 'admin123'",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -58,6 +58,108 @@
       ]
     },
     {
+      "name": "Device Management",
+      "description": "Register and manage ZKTeco devices",
+      "item": [
+        {
+          "name": "Create New Device",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/devices",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "devices"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"ZK-001\",\n  \"name\": \"Main Office K60\",\n  \"ipAddress\": \"192.168.1.100\",\n  \"location\": \"Office Building - Floor 1\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Devices",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/devices?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "devices"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Device by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/devices/{{deviceId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "devices", "{{deviceId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Device Statistics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/devices/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "devices", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Update Device",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/devices/{{deviceId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "devices", "{{deviceId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Main Office K60 Updated\",\n  \"ipAddress\": \"192.168.1.101\",\n  \"location\": \"Office Building - Floor 2\",\n  \"isActive\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Device",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/api/v1/devices/{{deviceId}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "devices", "{{deviceId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "User Management",
       "description": "Manage employee identities and device assignments",
       "item": [
@@ -110,7 +212,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"deviceId\": \"ZK-001\"\n}"
+              "raw": "{\n  \"deviceId\": \"{{deviceId}}\"\n}"
             }
           }
         }
@@ -127,13 +229,11 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json",
-                "description": "Request body should be JSON"
+                "value": "application/json"
               },
               {
                 "key": "x-api-key",
-                "value": "{{api_key}}",
-                "description": "API Key for device authentication"
+                "value": "{{api_key}}"
               }
             ],
             "url": {
@@ -183,13 +283,11 @@
               "query": [
                 {
                   "key": "startDate",
-                  "value": "2026-04-01",
-                  "description": "Start date for summary (optional)"
+                  "value": "2026-04-01"
                 },
                 {
                   "key": "endDate",
-                  "value": "2026-04-30",
-                  "description": "End date for summary (optional)"
+                  "value": "2026-04-30"
                 }
               ]
             }
@@ -206,51 +304,19 @@
               "query": [
                 {
                   "key": "startDate",
-                  "value": "2026-04-01",
-                  "description": "Start of date range"
+                  "value": "2026-04-01"
                 },
                 {
                   "key": "endDate",
-                  "value": "2026-04-30",
-                  "description": "End of date range"
-                },
-                {
-                  "key": "userId",
-                  "value": "",
-                  "description": "Filter by specific user ID",
-                  "disabled": true
-                },
-                {
-                  "key": "deviceId",
-                  "value": "",
-                  "description": "Filter by device ID",
-                  "disabled": true
-                },
-                {
-                  "key": "status",
-                  "value": "PRESENT",
-                  "description": "Filter by attendance status",
-                  "disabled": true
+                  "value": "2026-04-30"
                 },
                 {
                   "key": "page",
-                  "value": "1",
-                  "description": "Page number for pagination"
+                  "value": "1"
                 },
                 {
                   "key": "limit",
-                  "value": "10",
-                  "description": "Records per page (max 100)"
-                },
-                {
-                  "key": "sortBy",
-                  "value": "date",
-                  "description": "Sort field: date, createdAt"
-                },
-                {
-                  "key": "sortOrder",
-                  "value": "desc",
-                  "description": "Sort order: asc, desc"
+                  "value": "10"
                 }
               ]
             }
@@ -267,45 +333,19 @@
               "query": [
                 {
                   "key": "startDate",
-                  "value": "2026-04-01",
-                  "description": "Start of date range"
+                  "value": "2026-04-01"
                 },
                 {
                   "key": "endDate",
-                  "value": "2026-04-30",
-                  "description": "End of date range"
-                },
-                {
-                  "key": "userId",
-                  "value": "",
-                  "description": "Filter by specific user ID",
-                  "disabled": true
-                },
-                {
-                  "key": "deviceId",
-                  "value": "",
-                  "description": "Filter by device ID",
-                  "disabled": true
+                  "value": "2026-04-30"
                 },
                 {
                   "key": "page",
-                  "value": "1",
-                  "description": "Page number for pagination"
+                  "value": "1"
                 },
                 {
                   "key": "limit",
-                  "value": "10",
-                  "description": "Records per page (max 100)"
-                },
-                {
-                  "key": "sortBy",
-                  "value": "checkInTime",
-                  "description": "Sort field: checkInTime, createdAt"
-                },
-                {
-                  "key": "sortOrder",
-                  "value": "desc",
-                  "description": "Sort order: asc, desc"
+                  "value": "10"
                 }
               ]
             }
@@ -348,6 +388,11 @@
     },
     {
       "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "deviceId",
       "value": "",
       "type": "string"
     }
