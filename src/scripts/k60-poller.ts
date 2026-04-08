@@ -36,8 +36,12 @@ function isCheckOut(status: unknown) {
 }
 
 function normalizeAttendanceLog(log: any) {
-  const deviceUserId = String(log.userid ?? log.userId ?? log.enrollNumber ?? log.id ?? '').trim();
-  const timestamp = String(log.timestamp ?? log.time ?? log.date ?? '').trim();
+  const deviceUserId = String(
+    log.deviceUserId ?? log.userSn ?? log.userid ?? log.userId ?? log.enrollNumber ?? log.id ?? ''
+  ).trim();
+  const timestamp = String(
+    log.recordTime ?? log.timestamp ?? log.time ?? log.date ?? ''
+  ).trim();
   const status = log.status ?? log.checkType ?? log.state ?? log.punchType;
   return { deviceUserId, timestamp, status, rawPayload: log };
 }
@@ -59,9 +63,9 @@ async function processLog(log: any) {
     return;
   }
 
-  const parsedTimestamp = new Date(normalized.timestamp.replace(' ', 'T'));
+  const parsedTimestamp = new Date(normalized.timestamp);
   if (Number.isNaN(parsedTimestamp.getTime())) {
-    console.warn('Skipping attendance log with invalid timestamp:', normalized.timestamp);
+    console.warn('Skipping attendance log with invalid timestamp:', normalized.timestamp, 'raw log:', log);
     return;
   }
 

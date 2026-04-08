@@ -24,10 +24,7 @@ export class AttendanceService {
     // To handle Pakistan Standard Time consistently, extract YYYY-MM-DD in UTC+5
     const dateStr = this.formatDatePST(timestamp);
 
-    const user = await prisma.user.findUnique({ where: { deviceUserId } });
-    if (!user) {
-      throw new Error(`DeviceUser ${deviceUserId} not mapped to any system user.`);
-    }
+    const user = await this.ensureUser(deviceUserId);
 
     let daily: any = await this.repo.getAttendanceDaily(user.id, dateStr);
     if (!daily) {
@@ -66,10 +63,7 @@ export class AttendanceService {
 
     const dateStr = this.formatDatePST(timestamp);
 
-    const user = await prisma.user.findUnique({ where: { deviceUserId } });
-    if (!user) {
-      throw new Error(`DeviceUser ${deviceUserId} not mapped to any system user.`);
-    }
+    const user = await this.ensureUser(deviceUserId);
 
     const daily = await this.repo.getAttendanceDaily(user.id, dateStr);
     if (!daily) {
@@ -90,6 +84,20 @@ export class AttendanceService {
 
     await this.repo.updateSessionCheckOut(latestSession.id, timestamp, Math.floor(diffMinutes));
     return { success: true, message: 'Check-out processed successfully' };
+  }
+
+  private async ensureUser(deviceUserId: string) {
+    let user = await prisma.user.findUnique({ where: { deviceUserId } });
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          deviceUserId,
+          name: `DeviceUser ${deviceUserId}`,
+          role: 'EMPLOYEE',
+        },
+      });
+    }
+    return user;
   }
 
   private formatDatePST(date: Date): string {
