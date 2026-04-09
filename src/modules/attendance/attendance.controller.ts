@@ -212,12 +212,23 @@ export const getUserCheckInOut = async (req: Request, res: Response) => {
       orderBy: { checkInTime: 'asc' },
     });
 
+    // Helper function to format minutes to HH:MM:SS
+    const formatDuration = (minutes: number | null) => {
+      if (!minutes) return '00:00:00';
+      const hours = Math.floor(minutes / 60);
+      const mins = Math.floor(minutes % 60);
+      const secs = Math.floor((minutes * 60) % 60);
+      return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    };
+
+    const totalMinutes = sessions.reduce((acc, s) => acc + (s.duration || 0), 0);
+
     const summary = {
       totalSessions: sessions.length,
       totalCheckIns: sessions.filter(s => s.checkInTime).length,
       totalCheckOuts: sessions.filter(s => s.checkOutTime).length,
-      totalHours: sessions.reduce((acc, s) => acc + (s.duration || 0), 0),
-      averageHours: sessions.length > 0 ? Math.round(sessions.reduce((acc, s) => acc + (s.duration || 0), 0) / sessions.length) : 0,
+      totalHours: formatDuration(totalMinutes),
+      averageDuration: sessions.length > 0 ? formatDuration(Math.round(totalMinutes / sessions.length)) : '00:00:00',
     };
 
     res.json({
@@ -238,7 +249,8 @@ export const getUserCheckInOut = async (req: Request, res: Response) => {
           date: session.daily.date,
           checkInTime: session.checkInTime,
           checkOutTime: session.checkOutTime,
-          duration: session.duration,
+          durationMinutes: session.duration,
+          durationFormatted: formatDuration(session.duration),
           status: session.daily.status,
         })),
         summary,
