@@ -151,11 +151,8 @@ async function pollOnce() {
     console.log('[POLL] Fetching attendances...');
     const logsRaw = await zkInstance.getAttendances();
     console.log('[DEBUG] Raw attendances response:', JSON.stringify(logsRaw, null, 2));
-    console.log('[POLL] Attendances fetched, processing', Array.isArray(logsRaw) ? logsRaw.length : 'unknown', 'logs');
-    if (!Array.isArray(logsRaw)) {
-      console.log('[DEBUG] logsRaw is not an array:', typeof logsRaw, logsRaw);
-    }
     const logs = Array.isArray(logsRaw) ? logsRaw : logsRaw?.data ?? [];
+    console.log('[POLL] Attendances fetched, processing', Array.isArray(logs) ? logs.length : 'unknown', 'logs');
     if (!Array.isArray(logs)) {
       console.warn('Received unexpected attendances response from K60:', logsRaw);
       return;
