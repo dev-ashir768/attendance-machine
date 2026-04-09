@@ -105,8 +105,11 @@ async function processLog(log: any) {
 
   if (!isCheckIn(normalized.status)) {
     // Fallback: if status is unknown but there is an open session, treat it as checkout.
+    console.log(`[DEBUG] Checking fallback for user ${normalized.deviceUserId}`);
     const user = await prisma.user.findUnique({ where: { deviceUserId: normalized.deviceUserId } });
-    if (user) {
+    if (!user) {
+      console.log(`[DEBUG] No user found for deviceUserId ${normalized.deviceUserId}`);
+    } else {
       const today = new Date(parsedTimestamp);
       const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}T00:00:00.000Z`;
       const daily = await prisma.attendanceDaily.findUnique({
@@ -114,19 +117,31 @@ async function processLog(log: any) {
           userId_date: { userId: user.id, date: new Date(dateStr) }
         }
       });
-      if (daily) {
+      if (!daily) {
+        console.log(`[DEBUG] No daily record found for user ${user.id} on ${dateStr}`);
+      } else {
         const latestSession = await prisma.attendanceSession.findFirst({
           where: { dailyId: daily.id },
           orderBy: { checkInTime: 'desc' }
         });
-        if (latestSession && !latestSession.checkOutTime && parsedTimestamp.getTime() > latestSession.checkInTime.getTime() + 60000) {
-          console.log(`[DEBUG] Fallback using open session checkout for user ${normalized.deviceUserId}`);
-          try {
-            await attendanceService.processCheckOut(normalized.deviceUserId, K60_DEVICE_ID, parsedTimestamp.toISOString(), normalized.rawPayload);
-            console.log(`✅ Processed fallback CHECK-OUT for user ${normalized.deviceUserId} at ${parsedTimestamp.toISOString()}`);
-            return;
-          } catch (error: any) {
-            console.error(`❌ Fallback CHECK-OUT ERROR for user ${normalized.deviceUserId}: ${error.message}`);
+        if (!latestSession) {
+          console.log(`[DEBUG] No session found for daily ${daily.id}`);
+        } else if (latestSession.checkOutTime) {
+          console.log(`[DEBUG] Latest session already has checkOutTime: ${latestSession.checkOutTime}`);
+        } else {
+          const timeDiff = parsedTimestamp.getTime() - latestSession.checkInTime.getTime();
+          console.log(`[DEBUG] Time diff: ${timeDiff}ms (>60000ms required)`);
+          if (timeDiff > 60000) {
+            console.log(`[DEBUG] Fallback using open session checkout for user ${normalized.deviceUserId}`);
+            try {
+              await attendanceService.processCheckOut(normalized.deviceUserId, K60_DEVICE_ID, parsedTimestamp.toISOString(), normalized.rawPayload);
+              console.log(`✅ Processed fallback CHECK-OUT for user ${normalized.deviceUserId} at ${parsedTimestamp.toISOString()}`);
+              return;
+            } catch (error: any) {
+              console.error(`❌ Fallback CHECK-OUT ERROR for user ${normalized.deviceUserId}: ${error.message}`);
+            }
+          } else {
+            console.log(`[DEBUG] Time diff too small, processing as check-in`);
           }
         }
       }
