@@ -142,10 +142,15 @@ async function processLog(log: any) {
 }
 
 async function pollOnce() {
+  console.log('[POLL] Starting poll for device', K60_DEVICE_ID);
   const zkInstance = new ZKLib(K60_IP, K60_PORT, 10000, 4000);
   try {
+    console.log('[POLL] Creating socket to', K60_IP, ':', K60_PORT);
     await zkInstance.createSocket();
+    console.log('[POLL] Socket created successfully');
+    console.log('[POLL] Fetching attendances...');
     const logsRaw = await zkInstance.getAttendances();
+    console.log('[POLL] Attendances fetched, processing', Array.isArray(logsRaw) ? logsRaw.length : 'unknown', 'logs');
     const logs = Array.isArray(logsRaw) ? logsRaw : logsRaw?.data ?? [];
     if (!Array.isArray(logs)) {
       console.warn('Received unexpected attendances response from K60:', logsRaw);
@@ -159,11 +164,14 @@ async function pollOnce() {
         console.error('Error processing log:', error.message || error);
       }
     }
+    console.log('[POLL] Poll completed successfully');
   } catch (error: any) {
     console.error('K60 poll error:', error.message || error);
   } finally {
     try {
+      console.log('[POLL] Disconnecting...');
       await zkInstance.disconnect();
+      console.log('[POLL] Disconnected');
     } catch (disconnectError) {
       // ignore disconnect errors
     }
@@ -171,9 +179,12 @@ async function pollOnce() {
 }
 
 async function startPoller() {
+  console.log('[START] Ensuring device in database...');
   await ensureDevice();
-  console.log(`Starting K60 poller for device ${K60_DEVICE_ID} at ${K60_IP}:${K60_PORT}`);
+  console.log(`[START] Starting K60 poller for device ${K60_DEVICE_ID} at ${K60_IP}:${K60_PORT}`);
+  console.log('[START] Running initial poll...');
   await pollOnce();
+  console.log('[START] Setting up interval polling every', K60_POLL_INTERVAL_MS / 1000, 'seconds');
   setInterval(async () => {
     console.log('Polling K60 for new attendances...');
     await pollOnce();
