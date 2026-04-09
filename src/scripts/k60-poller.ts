@@ -173,6 +173,14 @@ async function pollOnce() {
       return;
     }
 
+    // Sort logs by timestamp to process in chronological order
+    logs.sort((a, b) => {
+      const timeA = new Date(a.recordTime ?? a.timestamp ?? a.time ?? a.date ?? 0).getTime();
+      const timeB = new Date(b.recordTime ?? b.timestamp ?? b.time ?? b.date ?? 0).getTime();
+      return timeA - timeB;
+    });
+    console.log('[POLL] Logs sorted by timestamp');
+
     for (const log of logs) {
       try {
         await processLog(log);
