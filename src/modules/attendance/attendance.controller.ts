@@ -80,6 +80,53 @@ export const getAttendanceHistory = async (req: Request, res: Response) => {
   }
 };
 
+export const getAllUsersAttendance = async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate } = req.query as any;
+
+    const where: any = {};
+    if (startDate || endDate) {
+      where.date = {};
+      if (startDate) where.date.gte = new Date(String(startDate));
+      if (endDate) where.date.lte = new Date(String(endDate));
+    }
+
+    const records = await prisma.attendanceDaily.findMany({
+      where,
+      include: {
+        user: { select: { id: true, name: true, deviceUserId: true } },
+        sessions: { orderBy: { checkInTime: 'asc' } },
+      },
+      orderBy: { date: 'desc' },
+    });
+
+    // Format for easier consumption in a report/table
+    const reportData = records.map(record => {
+      // Since we just restricted to 1 session per day, 
+      // we can pick the first session if it exists.
+      const session = record.sessions[0];
+      
+      return {
+        userId: record.user.id,
+        name: record.user.name,
+        deviceUserId: record.user.deviceUserId,
+        date: record.date.toISOString().split('T')[0],
+        checkInTime: session ? session.checkInTime : null,
+        checkOutTime: session ? session.checkOutTime : null,
+        durationMinutes: session ? session.duration : null,
+        status: record.status,
+      };
+    });
+
+    res.json({
+      success: true,
+      data: reportData,
+    });
+  } catch (error: any) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
+
 export const getAttendanceSessions = async (req: Request, res: Response) => {
   try {
     const { userId, startDate, endDate, deviceId, page = 1, limit = 10, sortBy = 'checkInTime', sortOrder = 'desc' } = req.query as any;

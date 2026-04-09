@@ -28,15 +28,9 @@ class AttendanceService {
             daily.sessions = [];
         }
         const latestSession = await this.repo.getLatestSession(daily.id);
-        // Prevent duplicate check-in if within threshold
+        // If any session already exists for today, don't allow another check-in
         if (latestSession) {
-            const diffMinutes = (timestamp.getTime() - latestSession.checkInTime.getTime()) / 60000;
-            // If no checkout and within threshold, ignore duplicate
-            if (diffMinutes < DUPLICATE_THRESHOLD_MINUTES) {
-                return { success: true, message: 'Duplicate check-in ignored' };
-            }
-            // If user forgot to checkout previous session, maybe auto-close it?
-            // Simple approach: Just open a new session.
+            return { success: true, message: 'Check-in ignored: User already has a session today.' };
         }
         await this.repo.createSession(user.id, daily.id, timestamp);
         return { success: true, message: 'Check-in processed successfully' };
@@ -58,8 +52,11 @@ class AttendanceService {
             throw new Error('No check-in record found for today.');
         }
         const latestSession = await this.repo.getLatestSession(daily.id);
-        if (!latestSession || latestSession.checkOutTime) {
-            throw new Error('Multiple check-outs or no active check-in session found.');
+        if (!latestSession) {
+            return { success: true, message: 'Check-out ignored: No check-in session found for today.' };
+        }
+        if (latestSession.checkOutTime) {
+            return { success: true, message: 'Check-out ignored: User already checked out today.' };
         }
         const diffMinutes = (timestamp.getTime() - latestSession.checkInTime.getTime()) / 60000;
         // Check if it's too quick (duplicate card scan bouncing check-out immediately?)

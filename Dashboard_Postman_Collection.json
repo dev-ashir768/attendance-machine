@@ -398,6 +398,27 @@
           }
         },
         {
+          "name": "Get All Users Attendance (Report)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/attendance/all-users-attendance?startDate=2026-04-01&endDate=2026-04-30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "attendance", "all-users-attendance"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2026-04-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-04-30"
+                }
+              ]
+            }
+          }
+        },
+        {
           "name": "Get Cron Status",
           "request": {
             "method": "GET",

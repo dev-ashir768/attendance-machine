@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserCheckInOut = exports.getAttendanceSummary = exports.getAttendanceSessions = exports.getAttendanceHistory = exports.checkOut = exports.checkIn = void 0;
+exports.getUserCheckInOut = exports.getAttendanceSummary = exports.getAttendanceSessions = exports.getAllUsersAttendance = exports.getAttendanceHistory = exports.checkOut = exports.checkIn = void 0;
 const attendance_service_1 = require("./attendance.service");
 const prisma_1 = require("../../utils/prisma");
 const attendanceService = new attendance_service_1.AttendanceService();
@@ -81,6 +81,51 @@ const getAttendanceHistory = async (req, res) => {
     }
 };
 exports.getAttendanceHistory = getAttendanceHistory;
+const getAllUsersAttendance = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.query;
+        const where = {};
+        if (startDate || endDate) {
+            where.date = {};
+            if (startDate)
+                where.date.gte = new Date(String(startDate));
+            if (endDate)
+                where.date.lte = new Date(String(endDate));
+        }
+        const records = await prisma_1.prisma.attendanceDaily.findMany({
+            where,
+            include: {
+                user: { select: { id: true, name: true, deviceUserId: true } },
+                sessions: { orderBy: { checkInTime: 'asc' } },
+            },
+            orderBy: { date: 'desc' },
+        });
+        // Format for easier consumption in a report/table
+        const reportData = records.map(record => {
+            // Since we just restricted to 1 session per day, 
+            // we can pick the first session if it exists.
+            const session = record.sessions[0];
+            return {
+                userId: record.user.id,
+                name: record.user.name,
+                deviceUserId: record.user.deviceUserId,
+                date: record.date.toISOString().split('T')[0],
+                checkInTime: session ? session.checkInTime : null,
+                checkOutTime: session ? session.checkOutTime : null,
+                durationMinutes: session ? session.duration : null,
+                status: record.status,
+            };
+        });
+        res.json({
+            success: true,
+            data: reportData,
+        });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
+exports.getAllUsersAttendance = getAllUsersAttendance;
 const getAttendanceSessions = async (req, res) => {
     try {
         const { userId, startDate, endDate, deviceId, page = 1, limit = 10, sortBy = 'checkInTime', sortOrder = 'desc' } = req.query;
