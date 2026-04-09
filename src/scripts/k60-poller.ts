@@ -134,19 +134,14 @@ async function processLog(log: any) {
         } else if (latestSession.checkOutTime) {
           console.log(`[DEBUG] Latest session already has checkOutTime: ${latestSession.checkOutTime}`);
         } else {
-          const timeDiff = parsedTimestamp.getTime() - latestSession.checkInTime.getTime();
-          console.log(`[DEBUG] Time diff: ${timeDiff}ms (>60000ms required)`);
-          if (timeDiff > 60000) {
-            console.log(`[DEBUG] Fallback using open session checkout for user ${normalized.deviceUserId}`);
-            try {
-              await attendanceService.processCheckOut(normalized.deviceUserId, K60_DEVICE_ID, parsedTimestamp.toISOString(), normalized.rawPayload);
-              console.log(`✅ Processed fallback CHECK-OUT for user ${normalized.deviceUserId} at ${parsedTimestamp.toISOString()}`);
-              return;
-            } catch (error: any) {
-              console.error(`❌ Fallback CHECK-OUT ERROR for user ${normalized.deviceUserId}: ${error.message}`);
-            }
-          } else {
-            console.log(`[DEBUG] Time diff too small, processing as check-in`);
+          // If there's an open session, treat this log as checkout (alternating behavior)
+          console.log(`[DEBUG] Fallback: Open session found, treating as checkout for user ${normalized.deviceUserId}`);
+          try {
+            await attendanceService.processCheckOut(normalized.deviceUserId, K60_DEVICE_ID, parsedTimestamp.toISOString(), normalized.rawPayload);
+            console.log(`✅ Processed fallback CHECK-OUT for user ${normalized.deviceUserId} at ${parsedTimestamp.toISOString()}`);
+            return;
+          } catch (error: any) {
+            console.error(`❌ Fallback CHECK-OUT ERROR for user ${normalized.deviceUserId}: ${error.message}`);
           }
         }
       }
