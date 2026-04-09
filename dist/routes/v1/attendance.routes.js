@@ -11,6 +11,7 @@ const router = (0, express_1.Router)();
 router.post('/check-in', deviceAuth_middleware_1.authenticateDevice, (0, validateInput_middleware_1.validate)(attendance_schema_1.webhookPayloadSchema), attendance_controller_1.checkIn);
 router.post('/check-out', deviceAuth_middleware_1.authenticateDevice, (0, validateInput_middleware_1.validate)(attendance_schema_1.webhookPayloadSchema), attendance_controller_1.checkOut);
 // Admin Dashboard Queries (Secured via JWT)
+router.get('/user-checkinout', auth_middleware_1.authenticateJWT, attendance_controller_1.getUserCheckInOut);
 router.get('/history', auth_middleware_1.authenticateJWT, (0, validateInput_middleware_1.validate)(attendance_schema_1.reportQuerySchema), attendance_controller_1.getAttendanceHistory);
 router.get('/sessions', auth_middleware_1.authenticateJWT, (0, validateInput_middleware_1.validate)(attendance_schema_1.reportQuerySchema), attendance_controller_1.getAttendanceSessions);
 router.get('/summary', auth_middleware_1.authenticateJWT, (0, validateInput_middleware_1.validate)(attendance_schema_1.reportQuerySchema), attendance_controller_1.getAttendanceSummary);

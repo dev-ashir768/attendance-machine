@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import { env } from './config/env';
 import { errorHandler } from './middlewares/errorHandler.middleware';
@@ -9,6 +10,7 @@ import { cronService } from './services/cron.service';
 
 const app = express();
 
+app.use(cors()); // Allow all origins (*)
 app.use(express.json());
 
 // ADMS Protocol relies on raw text payloads rather than JSON

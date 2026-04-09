@@ -11,5 +11,6 @@ router.post('/login', (0, validateInput_middleware_1.validate)(user_schema_1.log
 router.use(auth_middleware_1.authenticateJWT); // Secure all other user routes
 router.get('/', user_controller_1.getUsers);
 router.post('/', (0, validateInput_middleware_1.validate)(user_schema_1.createUserSchema), user_controller_1.createUser);
+router.put('/:userId', (0, validateInput_middleware_1.validate)(user_schema_1.updateUserSchema), user_controller_1.updateUser);
 router.post('/:userId/devices', (0, validateInput_middleware_1.validate)(user_schema_1.assignDeviceSchema), user_controller_1.assignDevice);
 exports.default = router;

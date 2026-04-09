@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.assignDevice = exports.getUsers = exports.login = exports.createUser = void 0;
+exports.assignDevice = exports.updateUser = exports.getUsers = exports.login = exports.createUser = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const user_repository_1 = require("./user.repository");
@@ -76,6 +76,30 @@ const getUsers = async (req, res) => {
     }
 };
 exports.getUsers = getUsers;
+const updateUser = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const updateData = req.body;
+        // Check if user exists
+        const user = await userRepo.findById(userId);
+        if (!user) {
+            return res.status(404).json({ success: false, error: 'User not found' });
+        }
+        // Hash password if provided
+        if (updateData.password) {
+            const saltRounds = 10;
+            updateData.password = await bcrypt_1.default.hash(updateData.password, saltRounds);
+        }
+        const updatedUser = await userRepo.update(userId, updateData);
+        // Remove password from response
+        const { password, ...userWithoutPassword } = updatedUser;
+        res.json({ success: true, data: userWithoutPassword });
+    }
+    catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+    }
+};
+exports.updateUser = updateUser;
 const assignDevice = async (req, res) => {
     try {
         const { userId } = req.params;

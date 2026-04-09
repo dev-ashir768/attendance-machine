@@ -31,7 +31,7 @@ router.get('/summary', async (req, res) => {
                     lt: new Date(`${today}T23:59:59Z`),
                 },
                 rawPayload: {
-                    path: ['source'],
+                    path: 'source',
                     equals: 'AUTOMATIC_CRON',
                 },
             },
@@ -46,7 +46,7 @@ router.get('/summary', async (req, res) => {
                 userName: session.user.name,
                 checkInTime: session.checkInTime,
                 checkOutTime: session.checkOutTime,
-                durationMinutes: session.durationMinutes,
+                duration: session.duration,
             })),
             cronActivity: {
                 totalRecords: cronLogs.length,
@@ -73,7 +73,7 @@ router.get('/cron-status', async (req, res) => {
         const cronLogs = await prisma_1.prisma.attendanceLog.findMany({
             where: {
                 rawPayload: {
-                    path: ['source'],
+                    path: 'source',
                     equals: 'AUTOMATIC_CRON',
                 },
             },
@@ -113,23 +113,20 @@ router.get('/logs', async (req, res) => {
         let where = {};
         if (source === 'cron') {
             where.rawPayload = {
-                path: ['source'],
+                path: 'source',
                 equals: 'AUTOMATIC_CRON',
             };
         }
         else if (source === 'device') {
             where.NOT = {
                 rawPayload: {
-                    path: ['source'],
+                    path: 'source',
                     equals: 'AUTOMATIC_CRON',
                 },
             };
         }
         const logs = await prisma_1.prisma.attendanceLog.findMany({
             where,
-            include: {
-                user: true,
-            },
             orderBy: { timestamp: 'desc' },
             take: limit,
         });
@@ -140,7 +137,7 @@ router.get('/logs', async (req, res) => {
                 id: log.id,
                 type: log.type,
                 timestamp: log.timestamp,
-                userName: log.user?.name || 'Unknown',
+                deviceUserId: log.deviceUserId,
                 deviceId: log.deviceId,
                 source: log.rawPayload?.source || 'device',
             })),

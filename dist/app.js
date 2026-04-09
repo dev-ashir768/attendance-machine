@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
 const env_1 = require("./config/env");
 const errorHandler_middleware_1 = require("./middlewares/errorHandler.middleware");
 const rateLimit_middleware_1 = require("./middlewares/rateLimit.middleware");
@@ -11,6 +12,7 @@ const v1_1 = __importDefault(require("./routes/v1"));
 const iclock_routes_1 = __importDefault(require("./routes/iclock.routes"));
 const cron_service_1 = require("./services/cron.service");
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)()); // Allow all origins (*)
 app.use(express_1.default.json());
 // ADMS Protocol relies on raw text payloads rather than JSON
 app.use('/iclock', express_1.default.text({ type: '*/*' }), iclock_routes_1.default);
