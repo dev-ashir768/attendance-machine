@@ -43,6 +43,12 @@ function isCheckIn(status: unknown) {
   return K60_CHECKIN_STATUSES.includes(value);
 }
 
+function formatDatePST(date: Date): string {
+  // Converts a Date to YYYY-MM-DD strictly applying UTC+5 (Pakistan Standard Time)
+  const pstDate = new Date(date.getTime() + 5 * 60 * 60 * 1000);
+  return pstDate.toISOString().split('T')[0] + 'T00:00:00.000Z';
+}
+
 function normalizeAttendanceLog(log: any) {
   const deviceUserId = String(
     log.deviceUserId ?? log.userSn ?? log.userid ?? log.userId ?? log.enrollNumber ?? log.id ?? ''
@@ -110,8 +116,7 @@ async function processLog(log: any) {
     if (!user) {
       console.log(`[DEBUG] No user found for deviceUserId ${normalized.deviceUserId}`);
     } else {
-      const today = new Date(parsedTimestamp);
-      const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}T00:00:00.000Z`;
+      const dateStr = formatDatePST(parsedTimestamp);
       const daily = await prisma.attendanceDaily.findUnique({
         where: {
           userId_date: { userId: user.id, date: new Date(dateStr) }
