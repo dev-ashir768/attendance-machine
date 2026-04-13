@@ -2,6 +2,8 @@
 CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
     `deviceUserId` VARCHAR(191) NOT NULL,
+    `username` VARCHAR(191) NULL,
+    `password` VARCHAR(191) NULL,
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NULL,
     `role` ENUM('ADMIN', 'EMPLOYEE') NOT NULL DEFAULT 'EMPLOYEE',
@@ -10,6 +12,7 @@ CREATE TABLE `User` (
     `updatedAt` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `User_deviceUserId_key`(`deviceUserId`),
+    UNIQUE INDEX `User_username_key`(`username`),
     UNIQUE INDEX `User_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
