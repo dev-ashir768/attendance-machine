@@ -29,32 +29,49 @@ export const getAttendanceHistory = async (req: Request, res: Response) => {
     const { userId, startDate, endDate, departmentId, deviceId, status, page = 1, limit = 10, sortBy = 'date', sortOrder = 'desc' } = req.query as any;
 
     const where: any = {};
-    if (userId) where.userId = String(userId);
-    if (status) where.status = status;
+    if (userId && userId !== 'all' && userId !== 'undefined') where.userId = String(userId);
+    if (status && status !== 'all' && status !== 'undefined') where.status = status;
+    
     if (startDate || endDate) {
       where.date = {};
       if (startDate) where.date.gte = new Date(String(startDate));
       if (endDate) where.date.lte = new Date(String(endDate));
     }
 
-    // If deviceId is provided, filter users associated with that device
-    if (deviceId) {
+    // Filter by Device
+    if (deviceId && deviceId !== 'all' && deviceId !== 'undefined') {
       const deviceUsers = await prisma.deviceUser.findMany({
         where: { deviceId: String(deviceId) },
         select: { userId: true },
       });
       const userIds = deviceUsers.map(du => du.userId);
-      where.userId = { in: userIds };
+      // If we already have a userId, we need to intersect them
+      if (where.userId) {
+        if (typeof where.userId === 'string') {
+          if (!userIds.includes(where.userId)) {
+             where.userId = { in: [] }; // No intersection
+          }
+        } else if (where.userId.in) {
+           where.userId.in = where.userId.in.filter((id: string) => userIds.includes(id));
+        }
+      } else {
+        where.userId = { in: userIds };
+      }
     }
 
-    if (departmentId) {
+    // Filter by Department
+    if (departmentId && departmentId !== 'all' && departmentId !== 'undefined') {
       where.user = {
         departmentId: String(departmentId)
       };
     }
 
     const orderBy: any = {};
-    orderBy[sortBy] = sortOrder;
+    if (sortBy) {
+      orderBy[sortBy] = sortOrder || 'desc';
+    } else {
+      orderBy.date = 'desc';
+    }
 
     const totalRecords = await prisma.attendanceDaily.count({ where });
     const totalPages = Math.ceil(totalRecords / limit);
@@ -88,16 +105,32 @@ export const getAttendanceHistory = async (req: Request, res: Response) => {
 
 export const getAllUsersAttendance = async (req: Request, res: Response) => {
   try {
-    const { startDate, endDate, departmentId } = req.query as any;
+    const { startDate, endDate, departmentId, deviceId, status, userId } = req.query as any;
 
     const where: any = {};
+    if (userId && userId !== 'all' && userId !== 'undefined') where.userId = String(userId);
+    if (status && status !== 'all' && status !== 'undefined') where.status = status;
+
     if (startDate || endDate) {
       where.date = {};
       if (startDate) where.date.gte = new Date(String(startDate));
       if (endDate) where.date.lte = new Date(String(endDate));
     }
 
-    if (departmentId) {
+    if (deviceId && deviceId !== 'all' && deviceId !== 'undefined') {
+      const deviceUsers = await prisma.deviceUser.findMany({
+        where: { deviceId: String(deviceId) },
+        select: { userId: true },
+      });
+      const userIds = deviceUsers.map(du => du.userId);
+      if (where.userId) {
+        where.userId = { in: userIds.filter(id => id === where.userId) };
+      } else {
+        where.userId = { in: userIds };
+      }
+    }
+
+    if (departmentId && departmentId !== 'all' && departmentId !== 'undefined') {
       where.user = {
         departmentId: String(departmentId)
       };
@@ -152,24 +185,28 @@ export const getAttendanceSessions = async (req: Request, res: Response) => {
     const { userId, startDate, endDate, departmentId, deviceId, page = 1, limit = 10, sortBy = 'checkInTime', sortOrder = 'desc' } = req.query as any;
 
     const where: any = {};
-    if (userId) where.userId = String(userId);
+    if (userId && userId !== 'all' && userId !== 'undefined') where.userId = String(userId);
     if (startDate || endDate) {
       where.checkInTime = {};
       if (startDate) where.checkInTime.gte = new Date(String(startDate));
       if (endDate) where.checkInTime.lte = new Date(String(endDate));
     }
 
-    // If deviceId is provided, filter via daily attendance or user
-    if (deviceId) {
+    // Filter by Device
+    if (deviceId && deviceId !== 'all' && deviceId !== 'undefined') {
       const deviceUsers = await prisma.deviceUser.findMany({
         where: { deviceId: String(deviceId) },
         select: { userId: true },
       });
       const userIds = deviceUsers.map(du => du.userId);
-      where.userId = { in: userIds };
+      if (where.userId) {
+        where.userId = { in: userIds.filter(id => id === where.userId) };
+      } else {
+        where.userId = { in: userIds };
+      }
     }
 
-    if (departmentId) {
+    if (departmentId && departmentId !== 'all' && departmentId !== 'undefined') {
       where.user = {
         departmentId: String(departmentId)
       };
