@@ -191,7 +191,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"deviceUserId\": \"1\",\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": \"EMPLOYEE\"\n}"
+              "raw": "{\n  \"deviceUserId\": \"1\",\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": \"EMPLOYEE\",\n  \"departmentId\": \"{{departmentId}}\",\n  \"designationId\": \"{{designationId}}\"\n}"
             }
           }
         },
@@ -212,7 +212,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"john123\",\n  \"name\": \"John Doe Updated\",\n  \"email\": \"john.updated@example.com\",\n  \"password\": \"securePassword123\"\n}"
+              "raw": "{\n  \"username\": \"john123\",\n  \"name\": \"John Doe Updated\",\n  \"email\": \"john.updated@example.com\",\n  \"password\": \"securePassword123\",\n  \"departmentId\": \"{{departmentId}}\",\n  \"designationId\": \"{{designationId}}\"\n}"
             }
           }
         },
@@ -448,6 +448,82 @@
                   "value": "50"
                 }
               ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Department Management",
+      "description": "Manage company departments",
+      "item": [
+        {
+          "name": "Get All Departments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/departments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "departments"]
+            }
+          }
+        },
+        {
+          "name": "Create New Department",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/departments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "departments"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Engineering\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Designation Management",
+      "description": "Manage employee designations",
+      "item": [
+        {
+          "name": "Get All Designations",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/designations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "designations"]
+            }
+          }
+        },
+        {
+          "name": "Create New Designation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/designations",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "designations"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Senior Developer\"\n}"
             }
           }
         }
