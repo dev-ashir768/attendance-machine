@@ -28,7 +28,7 @@ const checkOut = async (req, res) => {
 exports.checkOut = checkOut;
 const getAttendanceHistory = async (req, res) => {
     try {
-        const { userId, startDate, endDate, deviceId, status, page = 1, limit = 10, sortBy = 'date', sortOrder = 'desc' } = req.query;
+        const { userId, startDate, endDate, departmentId, deviceId, status, page = 1, limit = 10, sortBy = 'date', sortOrder = 'desc' } = req.query;
         const where = {};
         if (userId)
             where.userId = String(userId);
@@ -49,6 +49,11 @@ const getAttendanceHistory = async (req, res) => {
             });
             const userIds = deviceUsers.map(du => du.userId);
             where.userId = { in: userIds };
+        }
+        if (departmentId) {
+            where.user = {
+                departmentId: String(departmentId)
+            };
         }
         const orderBy = {};
         orderBy[sortBy] = sortOrder;
@@ -83,7 +88,7 @@ const getAttendanceHistory = async (req, res) => {
 exports.getAttendanceHistory = getAttendanceHistory;
 const getAllUsersAttendance = async (req, res) => {
     try {
-        const { startDate, endDate } = req.query;
+        const { startDate, endDate, departmentId } = req.query;
         const where = {};
         if (startDate || endDate) {
             where.date = {};
@@ -92,10 +97,22 @@ const getAllUsersAttendance = async (req, res) => {
             if (endDate)
                 where.date.lte = new Date(String(endDate));
         }
+        if (departmentId) {
+            where.user = {
+                departmentId: String(departmentId)
+            };
+        }
         const records = await prisma_1.prisma.attendanceDaily.findMany({
             where,
             include: {
-                user: { select: { id: true, name: true, deviceUserId: true } },
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        deviceUserId: true,
+                        department: { select: { name: true } }
+                    }
+                },
                 sessions: { orderBy: { checkInTime: 'asc' } },
             },
             orderBy: { date: 'desc' },
@@ -109,6 +126,7 @@ const getAllUsersAttendance = async (req, res) => {
                 userId: record.user.id,
                 name: record.user.name,
                 deviceUserId: record.user.deviceUserId,
+                departmentName: record.user.department?.name || 'N/A',
                 date: record.date.toISOString().split('T')[0],
                 checkInTime: session ? session.checkInTime : null,
                 checkOutTime: session ? session.checkOutTime : null,
@@ -128,7 +146,7 @@ const getAllUsersAttendance = async (req, res) => {
 exports.getAllUsersAttendance = getAllUsersAttendance;
 const getAttendanceSessions = async (req, res) => {
     try {
-        const { userId, startDate, endDate, deviceId, page = 1, limit = 10, sortBy = 'checkInTime', sortOrder = 'desc' } = req.query;
+        const { userId, startDate, endDate, departmentId, deviceId, page = 1, limit = 10, sortBy = 'checkInTime', sortOrder = 'desc' } = req.query;
         const where = {};
         if (userId)
             where.userId = String(userId);
@@ -147,6 +165,11 @@ const getAttendanceSessions = async (req, res) => {
             });
             const userIds = deviceUsers.map(du => du.userId);
             where.userId = { in: userIds };
+        }
+        if (departmentId) {
+            where.user = {
+                departmentId: String(departmentId)
+            };
         }
         const orderBy = {};
         orderBy[sortBy] = sortOrder;

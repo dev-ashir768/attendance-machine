@@ -10,6 +10,8 @@ exports.createUserSchema = zod_1.z.object({
         name: zod_1.z.string().min(1, 'name is required'),
         email: zod_1.z.string().email().optional(),
         role: zod_1.z.enum(['ADMIN', 'EMPLOYEE']).optional(),
+        departmentId: zod_1.z.string().uuid().optional(),
+        designationId: zod_1.z.string().uuid().optional(),
     }),
 });
 exports.loginSchema = zod_1.z.object({
@@ -25,6 +27,8 @@ exports.updateUserSchema = zod_1.z.object({
         name: zod_1.z.string().min(1, 'name is required').optional(),
         email: zod_1.z.string().email().optional(),
         role: zod_1.z.enum(['ADMIN', 'EMPLOYEE']).optional(),
+        departmentId: zod_1.z.string().uuid().optional(),
+        designationId: zod_1.z.string().uuid().optional(),
     }),
 });
 exports.assignDeviceSchema = zod_1.z.object({

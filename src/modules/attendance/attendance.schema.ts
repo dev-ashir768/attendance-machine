@@ -18,6 +18,7 @@ export const reportQuerySchema = z.object({
     userId: z.string().optional(),
     deviceId: z.string().optional(),
     status: z.enum(['PRESENT', 'ABSENT', 'LATE', 'HALF_DAY']).optional(),
+    departmentId: z.string().optional(),
     page: z.string().transform(val => parseInt(val)).refine(val => val > 0, 'Page must be greater than 0').optional(),
     limit: z.string().transform(val => parseInt(val)).refine(val => val > 0 && val <= 100, 'Limit must be between 1 and 100').optional(),
     sortBy: z.enum(['date', 'createdAt', 'checkInTime']).optional(),

@@ -19,6 +19,7 @@ exports.reportQuerySchema = zod_1.z.object({
         userId: zod_1.z.string().optional(),
         deviceId: zod_1.z.string().optional(),
         status: zod_1.z.enum(['PRESENT', 'ABSENT', 'LATE', 'HALF_DAY']).optional(),
+        departmentId: zod_1.z.string().optional(),
         page: zod_1.z.string().transform(val => parseInt(val)).refine(val => val > 0, 'Page must be greater than 0').optional(),
         limit: zod_1.z.string().transform(val => parseInt(val)).refine(val => val > 0 && val <= 100, 'Limit must be between 1 and 100').optional(),
         sortBy: zod_1.z.enum(['date', 'createdAt', 'checkInTime']).optional(),

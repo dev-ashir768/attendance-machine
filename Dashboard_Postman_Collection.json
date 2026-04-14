@@ -344,7 +344,7 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/api/v1/attendance/history?page=1&limit=10&startDate=2026-04-01&endDate=2026-04-30",
+              "raw": "{{base_url}}/api/v1/attendance/history?page=1&limit=10&startDate=2026-04-01&endDate=2026-04-30&departmentId={{departmentId}}",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "attendance", "history"],
               "query": [
@@ -355,6 +355,11 @@
                 {
                   "key": "endDate",
                   "value": "2026-04-30"
+                },
+                {
+                  "key": "departmentId",
+                  "value": "{{departmentId}}",
+                  "description": "Optional: Filter by Department ID"
                 },
                 {
                   "key": "page",
@@ -373,7 +378,7 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/api/v1/attendance/sessions?page=1&limit=10&startDate=2026-04-01&endDate=2026-04-30",
+              "raw": "{{base_url}}/api/v1/attendance/sessions?page=1&limit=10&startDate=2026-04-01&endDate=2026-04-30&departmentId={{departmentId}}",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "attendance", "sessions"],
               "query": [
@@ -384,6 +389,11 @@
                 {
                   "key": "endDate",
                   "value": "2026-04-30"
+                },
+                {
+                  "key": "departmentId",
+                  "value": "{{departmentId}}",
+                  "description": "Optional: Filter by Department ID"
                 },
                 {
                   "key": "page",
@@ -402,7 +412,7 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/api/v1/attendance/all-users-attendance?startDate=2026-04-01&endDate=2026-04-30",
+              "raw": "{{base_url}}/api/v1/attendance/all-users-attendance?startDate=2026-04-01&endDate=2026-04-30&departmentId={{departmentId}}",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "attendance", "all-users-attendance"],
               "query": [
@@ -413,6 +423,11 @@
                 {
                   "key": "endDate",
                   "value": "2026-04-30"
+                },
+                {
+                  "key": "departmentId",
+                  "value": "{{departmentId}}",
+                  "description": "Optional: Filter by Department ID"
                 }
               ]
             }
