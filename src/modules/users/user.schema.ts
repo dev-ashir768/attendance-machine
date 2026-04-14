@@ -8,6 +8,8 @@ export const createUserSchema = z.object({
     name: z.string().min(1, 'name is required'),
     email: z.string().email().optional(),
     role: z.enum(['ADMIN', 'EMPLOYEE']).optional(),
+    departmentId: z.string().uuid().optional(),
+    designationId: z.string().uuid().optional(),
   }),
 });
 
@@ -25,6 +27,8 @@ export const updateUserSchema = z.object({
     name: z.string().min(1, 'name is required').optional(),
     email: z.string().email().optional(),
     role: z.enum(['ADMIN', 'EMPLOYEE']).optional(),
+    departmentId: z.string().uuid().optional(),
+    designationId: z.string().uuid().optional(),
   }),
 });
 

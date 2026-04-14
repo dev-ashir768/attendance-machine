@@ -7,7 +7,12 @@ export class UserRepository {
   }
 
   async findMany() {
-    return await prisma.user.findMany();
+    return await prisma.user.findMany({
+      include: {
+        department: true,
+        designation: true,
+      }
+    });
   }
 
   async findByUsername(username: string) {
@@ -18,7 +23,11 @@ export class UserRepository {
 
   async findById(id: string) {
     return await prisma.user.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        department: true,
+        designation: true,
+      }
     });
   }
 

@@ -7,7 +7,12 @@ class UserRepository {
         return await prisma_1.prisma.user.create({ data });
     }
     async findMany() {
-        return await prisma_1.prisma.user.findMany();
+        return await prisma_1.prisma.user.findMany({
+            include: {
+                department: true,
+                designation: true,
+            }
+        });
     }
     async findByUsername(username) {
         return await prisma_1.prisma.user.findUnique({
@@ -16,7 +21,11 @@ class UserRepository {
     }
     async findById(id) {
         return await prisma_1.prisma.user.findUnique({
-            where: { id }
+            where: { id },
+            include: {
+                department: true,
+                designation: true,
+            }
         });
     }
     async update(id, data) {

@@ -9,6 +9,7 @@
     "start": "node dist/app.js",
     "poll:k60": "ts-node src/scripts/k60-poller.ts",
     "seed:admin": "ts-node src/scripts/seed-admin.ts",
+    "seed:departments": "ts-node src/scripts/seed-departments.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy"
