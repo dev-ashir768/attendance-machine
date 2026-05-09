@@ -14,6 +14,7 @@ model User {
   password     String?      // Hashed password
   name         String
   email        String?      @unique
+  gender       Gender?
   role         Role         @default(EMPLOYEE)
   isActive     Boolean      @default(true)
   createdAt    DateTime     @default(now())
@@ -48,6 +49,12 @@ model Designation {
 enum Role {
   ADMIN
   EMPLOYEE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
 }
 
 model Device {

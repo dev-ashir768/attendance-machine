@@ -5,11 +5,15 @@ const zod_1 = require("zod");
 const validate = (schema) => {
     return async (req, res, next) => {
         try {
-            await schema.parseAsync({
+            const validatedData = await schema.parseAsync({
                 body: req.body,
                 query: req.query,
                 params: req.params,
             });
+            // Assign back to request to preserve transformations
+            req.body = validatedData.body || req.body;
+            req.query = validatedData.query || req.query;
+            req.params = validatedData.params || req.params;
             return next();
         }
         catch (error) {
