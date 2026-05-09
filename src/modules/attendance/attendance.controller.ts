@@ -26,7 +26,7 @@ export const checkOut = async (req: Request, res: Response) => {
 
 export const getAttendanceHistory = async (req: Request, res: Response) => {
   try {
-    const { userId, startDate, endDate, departmentId, deviceId, status, page = 1, limit = 10, sortBy = 'date', sortOrder = 'desc' } = req.query as any;
+    const { userId, startDate, endDate, departmentId, designationId, gender, deviceId, status, page = 1, limit = 10, sortBy = 'date', sortOrder = 'desc' } = req.query as any;
 
     const where: any = {};
     if (userId && userId !== 'all' && userId !== 'undefined') where.userId = String(userId);
@@ -59,11 +59,14 @@ export const getAttendanceHistory = async (req: Request, res: Response) => {
       }
     }
 
-    // Filter by Department
-    if (departmentId && departmentId !== 'all' && departmentId !== 'undefined') {
-      where.user = {
-        departmentId: String(departmentId)
-      };
+    // Filter by User Attributes
+    if ((departmentId && departmentId !== 'all' && departmentId !== 'undefined') || 
+        (designationId && designationId !== 'all' && designationId !== 'undefined') ||
+        (gender && gender !== 'all' && gender !== 'undefined')) {
+      where.user = { ...where.user };
+      if (departmentId && departmentId !== 'all' && departmentId !== 'undefined') where.user.departmentId = String(departmentId);
+      if (designationId && designationId !== 'all' && designationId !== 'undefined') where.user.designationId = String(designationId);
+      if (gender && gender !== 'all' && gender !== 'undefined') where.user.gender = String(gender);
     }
 
     const orderBy: any = {};
@@ -105,7 +108,7 @@ export const getAttendanceHistory = async (req: Request, res: Response) => {
 
 export const getAllUsersAttendance = async (req: Request, res: Response) => {
   try {
-    const { startDate, endDate, departmentId, deviceId, status, userId } = req.query as any;
+    const { startDate, endDate, departmentId, designationId, gender, deviceId, status, userId } = req.query as any;
 
     const where: any = {};
     if (userId && userId !== 'all' && userId !== 'undefined') where.userId = String(userId);
@@ -130,10 +133,13 @@ export const getAllUsersAttendance = async (req: Request, res: Response) => {
       }
     }
 
-    if (departmentId && departmentId !== 'all' && departmentId !== 'undefined') {
-      where.user = {
-        departmentId: String(departmentId)
-      };
+    if ((departmentId && departmentId !== 'all' && departmentId !== 'undefined') || 
+        (designationId && designationId !== 'all' && designationId !== 'undefined') ||
+        (gender && gender !== 'all' && gender !== 'undefined')) {
+      where.user = { ...where.user };
+      if (departmentId && departmentId !== 'all' && departmentId !== 'undefined') where.user.departmentId = String(departmentId);
+      if (designationId && designationId !== 'all' && designationId !== 'undefined') where.user.designationId = String(designationId);
+      if (gender && gender !== 'all' && gender !== 'undefined') where.user.gender = String(gender);
     }
 
     const records = await prisma.attendanceDaily.findMany({
@@ -182,7 +188,7 @@ export const getAllUsersAttendance = async (req: Request, res: Response) => {
 
 export const getAttendanceSessions = async (req: Request, res: Response) => {
   try {
-    const { userId, startDate, endDate, departmentId, deviceId, page = 1, limit = 10, sortBy = 'checkInTime', sortOrder = 'desc' } = req.query as any;
+    const { userId, startDate, endDate, departmentId, designationId, gender, deviceId, page = 1, limit = 10, sortBy = 'checkInTime', sortOrder = 'desc' } = req.query as any;
 
     const where: any = {};
     if (userId && userId !== 'all' && userId !== 'undefined') where.userId = String(userId);
@@ -206,10 +212,13 @@ export const getAttendanceSessions = async (req: Request, res: Response) => {
       }
     }
 
-    if (departmentId && departmentId !== 'all' && departmentId !== 'undefined') {
-      where.user = {
-        departmentId: String(departmentId)
-      };
+    if ((departmentId && departmentId !== 'all' && departmentId !== 'undefined') || 
+        (designationId && designationId !== 'all' && designationId !== 'undefined') ||
+        (gender && gender !== 'all' && gender !== 'undefined')) {
+      where.user = { ...where.user };
+      if (departmentId && departmentId !== 'all' && departmentId !== 'undefined') where.user.departmentId = String(departmentId);
+      if (designationId && designationId !== 'all' && designationId !== 'undefined') where.user.designationId = String(designationId);
+      if (gender && gender !== 'all' && gender !== 'undefined') where.user.gender = String(gender);
     }
 
     const orderBy: any = {};

@@ -31,8 +31,15 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/v1/users/login",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "users", "login"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "login"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -73,8 +80,14 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/v1/devices",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "devices"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -88,8 +101,14 @@
             "method": "GET",
             "url": {
               "raw": "{{base_url}}/api/v1/devices?page=1&limit=10",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "devices"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices"
+              ],
               "query": [
                 {
                   "key": "page",
@@ -109,8 +128,15 @@
             "method": "GET",
             "url": {
               "raw": "{{base_url}}/api/v1/devices/{{deviceId}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "devices", "{{deviceId}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}"
+              ]
             }
           }
         },
@@ -120,8 +146,15 @@
             "method": "GET",
             "url": {
               "raw": "{{base_url}}/api/v1/devices/stats",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "devices", "stats"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "stats"
+              ]
             }
           }
         },
@@ -137,8 +170,15 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/v1/devices/{{deviceId}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "devices", "{{deviceId}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -152,8 +192,15 @@
             "method": "DELETE",
             "url": {
               "raw": "{{base_url}}/api/v1/devices/{{deviceId}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "devices", "{{deviceId}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "devices",
+                "{{deviceId}}"
+              ]
             }
           }
         }
@@ -169,8 +216,14 @@
             "method": "GET",
             "url": {
               "raw": "{{base_url}}/api/v1/users",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "users"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
             }
           }
         },
@@ -186,12 +239,18 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/v1/users",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "users"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users"
+              ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"deviceUserId\": \"1\",\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": \"EMPLOYEE\",\n  \"departmentId\": \"{{departmentId}}\",\n  \"designationId\": \"{{designationId}}\"\n}"
+              "raw": "{\n  \"deviceUserId\": \"1\",\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"role\": \"EMPLOYEE\",\n  \"departmentId\": \"{{departmentId}}\",\n  \"designationId\": \"{{designationId}}\",\n  \"gender\": \"MALE\"\n}"
             }
           }
         },
@@ -207,12 +266,19 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/v1/users/{{userId}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "users", "{{userId}}"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{userId}}"
+              ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"john123\",\n  \"name\": \"John Doe Updated\",\n  \"email\": \"john.updated@example.com\",\n  \"password\": \"securePassword123\",\n  \"departmentId\": \"{{departmentId}}\",\n  \"designationId\": \"{{designationId}}\"\n}"
+              "raw": "{\n  \"username\": \"john123\",\n  \"name\": \"John Doe Updated\",\n  \"email\": \"john.updated@example.com\",\n  \"password\": \"securePassword123\",\n  \"departmentId\": \"{{departmentId}}\",\n  \"designationId\": \"{{designationId}}\",\n  \"gender\": \"MALE\"\n}"
             }
           }
         },
@@ -228,12 +294,38 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/v1/users/{{userId}}/devices",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "users", "{{userId}}", "devices"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "{{userId}}",
+                "devices"
+              ]
             },
             "body": {
               "mode": "raw",
               "raw": "{\n  \"deviceId\": \"{{deviceId}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get User Statistics",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/statistics",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "users",
+                "statistics"
+              ]
             }
           }
         }
@@ -259,8 +351,15 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/v1/attendance/check-in",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "attendance", "check-in"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "check-in"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -284,8 +383,15 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/v1/attendance/check-out",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "attendance", "check-out"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "check-out"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -299,8 +405,15 @@
             "method": "GET",
             "url": {
               "raw": "{{base_url}}/api/v1/attendance/user-checkinout?userId={{userId}}&startDate=2026-04-01&endDate=2026-04-30",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "attendance", "user-checkinout"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "user-checkinout"
+              ],
               "query": [
                 {
                   "key": "userId",
@@ -324,8 +437,15 @@
             "method": "GET",
             "url": {
               "raw": "{{base_url}}/api/v1/attendance/summary?startDate=2026-04-01&endDate=2026-04-30",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "attendance", "summary"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "summary"
+              ],
               "query": [
                 {
                   "key": "startDate",
@@ -344,9 +464,16 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/api/v1/attendance/history?page=1&limit=10&startDate=2026-04-01&endDate=2026-04-30&departmentId={{departmentId}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "attendance", "history"],
+              "raw": "{{base_url}}/api/v1/attendance/history?page=1&limit=10&startDate=2026-04-01&endDate=2026-04-30&departmentId={{departmentId}}&designationId={{designationId}}&gender=MALE",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "history"
+              ],
               "query": [
                 {
                   "key": "startDate",
@@ -368,6 +495,16 @@
                 {
                   "key": "limit",
                   "value": "10"
+                },
+                {
+                  "key": "designationId",
+                  "value": "{{designationId}}",
+                  "description": "Optional: Filter by Designation ID"
+                },
+                {
+                  "key": "gender",
+                  "value": "MALE",
+                  "description": "Optional: Filter by Gender (MALE, FEMALE, OTHER)"
                 }
               ]
             }
@@ -378,9 +515,16 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/api/v1/attendance/sessions?page=1&limit=10&startDate=2026-04-01&endDate=2026-04-30&departmentId={{departmentId}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "attendance", "sessions"],
+              "raw": "{{base_url}}/api/v1/attendance/sessions?page=1&limit=10&startDate=2026-04-01&endDate=2026-04-30&departmentId={{departmentId}}&designationId={{designationId}}&gender=MALE",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "sessions"
+              ],
               "query": [
                 {
                   "key": "startDate",
@@ -402,6 +546,16 @@
                 {
                   "key": "limit",
                   "value": "10"
+                },
+                {
+                  "key": "designationId",
+                  "value": "{{designationId}}",
+                  "description": "Optional: Filter by Designation ID"
+                },
+                {
+                  "key": "gender",
+                  "value": "MALE",
+                  "description": "Optional: Filter by Gender (MALE, FEMALE, OTHER)"
                 }
               ]
             }
@@ -412,9 +566,16 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{base_url}}/api/v1/attendance/all-users-attendance?startDate=2026-04-01&endDate=2026-04-30&departmentId={{departmentId}}",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "attendance", "all-users-attendance"],
+              "raw": "{{base_url}}/api/v1/attendance/all-users-attendance?startDate=2026-04-01&endDate=2026-04-30&departmentId={{departmentId}}&designationId={{designationId}}&gender=MALE",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "all-users-attendance"
+              ],
               "query": [
                 {
                   "key": "startDate",
@@ -428,6 +589,16 @@
                   "key": "departmentId",
                   "value": "{{departmentId}}",
                   "description": "Optional: Filter by Department ID"
+                },
+                {
+                  "key": "designationId",
+                  "value": "{{designationId}}",
+                  "description": "Optional: Filter by Designation ID"
+                },
+                {
+                  "key": "gender",
+                  "value": "MALE",
+                  "description": "Optional: Filter by Gender (MALE, FEMALE, OTHER)"
                 }
               ]
             }
@@ -439,8 +610,15 @@
             "method": "GET",
             "url": {
               "raw": "{{base_url}}/api/v1/attendance/cron-status",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "attendance", "cron-status"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "cron-status"
+              ]
             }
           }
         },
@@ -450,8 +628,15 @@
             "method": "GET",
             "url": {
               "raw": "{{base_url}}/api/v1/attendance/logs?source=all&limit=50",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "attendance", "logs"],
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "attendance",
+                "logs"
+              ],
               "query": [
                 {
                   "key": "source",
@@ -478,8 +663,14 @@
             "method": "GET",
             "url": {
               "raw": "{{base_url}}/api/v1/departments",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "departments"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments"
+              ]
             }
           }
         },
@@ -495,8 +686,14 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/v1/departments",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "departments"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "departments"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -516,8 +713,14 @@
             "method": "GET",
             "url": {
               "raw": "{{base_url}}/api/v1/designations",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "designations"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "designations"
+              ]
             }
           }
         },
@@ -533,8 +736,14 @@
             ],
             "url": {
               "raw": "{{base_url}}/api/v1/designations",
-              "host": ["{{base_url}}"],
-              "path": ["api", "v1", "designations"]
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "designations"
+              ]
             },
             "body": {
               "mode": "raw",
@@ -550,14 +759,18 @@
       "listen": "prerequest",
       "script": {
         "type": "text/javascript",
-        "exec": [""]
+        "exec": [
+          ""
+        ]
       }
     },
     {
       "listen": "test",
       "script": {
         "type": "text/javascript",
-        "exec": [""]
+        "exec": [
+          ""
+        ]
       }
     }
   ],

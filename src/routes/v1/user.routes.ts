@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createUser, login, getUsers, updateUser, assignDevice } from '../../modules/users/user.controller';
+import { createUser, login, getUsers, updateUser, assignDevice, getStatistics } from '../../modules/users/user.controller';
 import { authenticateJWT } from '../../middlewares/auth.middleware';
 import { validate } from '../../middlewares/validateInput.middleware';
 import { createUserSchema, loginSchema, updateUserSchema, assignDeviceSchema } from '../../modules/users/user.schema';
@@ -11,6 +11,7 @@ router.post('/login', validate(loginSchema), login);
 
 router.use(authenticateJWT); // Secure all other user routes
 
+router.get('/statistics', getStatistics);
 router.get('/', getUsers);
 router.post('/', validate(createUserSchema), createUser);
 router.put('/:userId', validate(updateUserSchema), updateUser);
